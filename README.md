@@ -2,7 +2,7 @@
 
 ## Structure
 - `notebooks/pca.ipynb`: notebook PCA (projection 2D, visualisation, observation, export).
-- `generate.py`: genere les sorties 2D dans `outputs/` (actuellement PCA).
+- `generate.py`: genere les sorties 2D dans `outputs/` (PCA + t-SNE).
 - `evaluate.py`: compare les methodes via la metrique `trustworthiness`.
 - `data/city_lifestyle_dataset.csv`: donnees source.
 
@@ -19,6 +19,14 @@ pip install pandas scikit-learn matplotlib numpy
 
 ```bash
 python generate.py
+```
+
+Options:
+
+```bash
+python generate.py --methods pca
+python generate.py --methods tsne
+python generate.py --methods pca tsne
 ```
 
 2. Evaluer les methodes disponibles:
@@ -95,7 +103,7 @@ Ce processus garantit un environnement identique pour toute l'equipe (meme image
 - Le script `evaluate.py` lit tous les fichiers `*_2d.csv` dans `outputs/`.
 - Exemples attendus:
   - `outputs/pca_2d.csv`
-  - `outputs/tsne_2d.csv`
+  - `outputs/tsne_emb_2d.csv` (ou `outputs/tsne_2d.csv`)
   - `outputs/umap_2d.csv`
 
 Chaque fichier doit contenir au moins 2 colonnes numeriques (coordonnees 2D) et le meme nombre de lignes que les donnees source.

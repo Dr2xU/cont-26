@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
 from sklearn.preprocessing import StandardScaler
 
 
@@ -33,6 +34,27 @@ def export_pca_2d(data_path: Path, outputs_dir: Path, random_state: int) -> Path
     return out_path
 
 
+def export_tsne_2d(data_path: Path, outputs_dir: Path, random_state: int) -> Path:
+    df, numeric = load_numeric_data(data_path)
+    x_scaled = StandardScaler().fit_transform(numeric)
+    x_2d = TSNE(
+        n_components=2,
+        perplexity=30,
+        random_state=random_state,
+        init="pca",
+        learning_rate="auto",
+    ).fit_transform(x_scaled)
+
+    out_df = pd.DataFrame(x_2d, columns=["tsne_1", "tsne_2"])
+    if "city_name" in df.columns:
+        out_df["city_name"] = df["city_name"].values
+
+    outputs_dir.mkdir(parents=True, exist_ok=True)
+    out_path = outputs_dir / "tsne_emb_2d.csv"
+    out_df.to_csv(out_path, index=False)
+    return out_path
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Generate exported 2D files used by the comparison script."
@@ -55,17 +77,42 @@ def main() -> None:
         default=42,
         help="Random seed for reproducible generation (default: 42).",
     )
+    parser.add_argument(
+        "--methods",
+        nargs="+",
+        default=["pca", "tsne"],
+        help="Methods to export (default: pca tsne).",
+    )
     args = parser.parse_args()
 
     if not args.data_path.exists():
         raise FileNotFoundError(f"Dataset not found: {args.data_path.resolve()}")
 
-    pca_path = export_pca_2d(
-        data_path=args.data_path,
-        outputs_dir=args.outputs_dir,
-        random_state=args.random_state,
-    )
-    print(f"Generated: {pca_path}")
+    selected = {m.strip().lower() for m in args.methods if m.strip()}
+    generated: list[Path] = []
+
+    if "pca" in selected:
+        generated.append(
+            export_pca_2d(
+                data_path=args.data_path,
+                outputs_dir=args.outputs_dir,
+                random_state=args.random_state,
+            )
+        )
+    if "tsne" in selected:
+        generated.append(
+            export_tsne_2d(
+                data_path=args.data_path,
+                outputs_dir=args.outputs_dir,
+                random_state=args.random_state,
+            )
+        )
+
+    if not generated:
+        raise ValueError("No supported method selected. Use any of: pca, tsne.")
+
+    for path in generated:
+        print(f"Generated: {path}")
 
 
 if __name__ == "__main__":

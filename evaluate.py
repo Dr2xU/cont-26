@@ -28,7 +28,11 @@ def load_embedding_2d(csv_path: Path) -> pd.DataFrame:
 
 def method_name_from_file(csv_path: Path) -> str:
     name = csv_path.stem.lower()
-    return name[:-3] if name.endswith("_2d") else name
+    if name.endswith("_emb_2d"):
+        return name[: -len("_emb_2d")]
+    if name.endswith("_2d"):
+        return name[: -len("_2d")]
+    return name
 
 
 def main() -> None:
