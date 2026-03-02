@@ -27,6 +27,13 @@ python generate.py
 python evaluate.py
 ```
 
+3. Evaluer seulement certains modeles (bonus):
+
+```bash
+python evaluate.py --methods pca
+python evaluate.py --methods pca tsne umap
+```
+
 ## Convention pour la comparaison
 - Le script `evaluate.py` lit tous les fichiers `*_2d.csv` dans `outputs/`.
 - Exemples attendus:

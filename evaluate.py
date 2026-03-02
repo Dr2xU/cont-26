@@ -56,6 +56,15 @@ def main() -> None:
         default=5,
         help="Number of neighbors for trustworthiness (default: 5).",
     )
+    parser.add_argument(
+        "--methods",
+        nargs="+",
+        default=None,
+        help=(
+            "Optional list of methods to evaluate (e.g. --methods pca tsne). "
+            "Method names are inferred from filenames like <method>_2d.csv."
+        ),
+    )
     args = parser.parse_args()
 
     if not args.data_path.exists():
@@ -67,9 +76,14 @@ def main() -> None:
     x_scaled = StandardScaler().fit_transform(x_numeric)
 
     exported_files = sorted(args.outputs_dir.glob("*_2d.csv"))
+    if args.methods:
+        selected = {m.strip().lower() for m in args.methods if m.strip()}
+        exported_files = [
+            p for p in exported_files if method_name_from_file(p).lower() in selected
+        ]
     if not exported_files:
         raise FileNotFoundError(
-            f"No exported 2D files found in {args.outputs_dir.resolve()} (expected *_2d.csv)."
+            f"No matching exported 2D files found in {args.outputs_dir.resolve()} (expected *_2d.csv)."
         )
 
     results: list[tuple[str, float, str]] = []
