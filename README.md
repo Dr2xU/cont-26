@@ -2,7 +2,7 @@
 
 ## Structure
 - `notebooks/pca.ipynb`: notebook PCA (projection 2D, visualisation, observation, export).
-- `generate.py`: genere les sorties 2D dans `outputs/` (PCA + t-SNE).
+- `generate.py`: genere les sorties 2D dans `outputs/` (PCA, t-SNE, UMAP, ISOMAP).
 - `evaluate.py`: compare les methodes via la metrique `trustworthiness`.
 - `data/city_lifestyle_dataset.csv`: donnees source.
 
@@ -11,7 +11,7 @@
 - Dependances:
 
 ```bash
-pip install pandas scikit-learn matplotlib numpy
+pip install -r requirements.txt
 ```
 
 ## Execution
@@ -26,7 +26,9 @@ Options:
 ```bash
 python generate.py --methods pca
 python generate.py --methods tsne
-python generate.py --methods pca tsne
+python generate.py --methods umap
+python generate.py --methods isomap
+python generate.py --methods pca tsne umap isomap
 ```
 
 2. Evaluer les methodes disponibles:
@@ -39,7 +41,7 @@ python evaluate.py
 
 ```bash
 python evaluate.py --methods pca
-python evaluate.py --methods pca tsne umap
+python evaluate.py --methods pca tsne umap isomap
 ```
 
 ## Docker
@@ -83,7 +85,7 @@ docker compose run --rm app sh -c "python generate.py && python evaluate.py"
 
 ```bash
 docker compose run --rm app python evaluate.py --methods pca
-docker compose run --rm app python evaluate.py --methods pca tsne umap
+docker compose run --rm app python evaluate.py --methods pca tsne umap isomap
 ```
 
 4. Boucle de developpement locale:
@@ -105,6 +107,7 @@ Ce processus garantit un environnement identique pour toute l'equipe (meme image
   - `outputs/pca_2d.csv`
   - `outputs/tsne_emb_2d.csv` (ou `outputs/tsne_2d.csv`)
   - `outputs/umap_2d.csv`
+  - `outputs/isomap_emb_2d.csv` (ou `outputs/isomap_2d.csv`)
 
 Chaque fichier doit contenir au moins 2 colonnes numeriques (coordonnees 2D) et le meme nombre de lignes que les donnees source.
 
