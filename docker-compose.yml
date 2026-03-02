@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    image: cont-26-eval
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: sh -c "python generate.py && python evaluate.py"
